@@ -1,0 +1,113 @@
+class User:
+    def __init__(self, name, phone, email, address, password):
+        self.name = name
+        self.phone = phone
+        self.email = email
+        self.address = address
+        self.password = password
+        self.orders = []
+
+    def place_order(self, items):
+        self.orders.append(items)
+
+
+class FoodItem:
+    def __init__(self, food_id, name, quantity, price, discount, stock):
+        self.food_id = food_id
+        self.name = name
+        self.quantity = quantity
+        self.price = price
+        self.discount = discount
+        self.stock = stock
+
+
+def register_user():
+    name = input("Enter your full name: ")
+    phone = input("Enter your phone number: ")
+    email = input("Enter your email: ")
+    address = input("Enter your address: ")
+    password = input("Enter your password: ")
+
+    return User(name, phone, email, address, password)
+
+
+def log_in(users):
+    email = input("Enter your email: ")
+    password = input("Enter your password: ")
+
+    for user in users:
+        if user.email == email and user.password == password:
+            return user
+
+    return None
+
+
+def show_menu(menu):
+    for item in menu:
+        print(f"{item.food_id}. {item.name} ({item.quantity}) [INR {item.price}]")
+        
+
+def main():
+    users = []
+    menu = [
+        FoodItem(1, "Tandoori Chicken", "4 pieces", 240, 0, 10),
+        FoodItem(2, "Vegan Burger", "1 piece", 320, 10, 15),
+        FoodItem(3, "Truffle Cake", "500gm", 900, 5, 5)
+    ]
+
+    while True:
+        print("1. Register")
+        print("2. Log In")
+        print("3. Quit")
+        choice = input("Select an option: ")
+
+        if choice == "1":
+            new_user = register_user()
+            users.append(new_user)
+            print("Registration successful!")
+
+        elif choice == "2":
+            logged_in_user = log_in(users)
+            if logged_in_user:
+                print(f"Welcome, {logged_in_user.name}!")
+                while True:
+                    print("\nUser Dashboard:")
+                    print("1. Place New Order")
+                    print("2. View Order History")
+                    print("3. Log Out")
+                    user_choice = input("Select an option: ")
+
+                    if user_choice == "1":
+                        show_menu(menu)
+                        selected_items = input("Enter the food item numbers (comma-separated): ")
+                        selected_item_ids = [int(item_id) for item_id in selected_items.split(",")]
+                        selected_items_list = [menu[item_id - 1] for item_id in selected_item_ids]
+                        logged_in_user.place_order(selected_items_list)
+                        print("Order placed!")
+
+                    elif user_choice == "2":
+                        print("Order History:")
+                        for i, order in enumerate(logged_in_user.orders, start=1):
+                            print(f"Order {i}:")
+                            for item in order:
+                                print(f"{item.name} ({item.quantity}) [INR {item.price}]")
+                            print("")
+
+                    elif user_choice == "3":
+                        print("Logging out...")
+                        break
+
+            else:
+                print("Invalid email or password. Please try again.")
+
+        elif choice == "3":
+            print("Goodbye!")
+            break
+
+        else:
+            print("Invalid choice. Please select a valid option.")
+
+
+if __name__ == "__main__":
+    main()
+
